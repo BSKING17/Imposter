@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Imposter Spiel</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🕵️‍♂️ Imposter Spiel</h1>
+
+    <div id="setup">
+      <label>Spieleranzahl:</label>
+      <input type="number" id="numPlayers" min="3" max="20" value="5">
+
+      <label>Anzahl Imposter:</label>
+      <input type="number" id="numImposters" min="1" value="1">
+
+      <button id="nextSetup">Weiter</button>
+    </div>
+
+    <div id="nameSetup" class="hidden">
+      <h2>Namen eingeben</h2>
+      <div id="nameInputs"></div>
+      <button id="startGame">Wörter verteilen</button>
+    </div>
+
+    <div id="reveal" class="hidden">
+      <h2 id="currentPlayer"></h2>
+      <p id="wordDisplay"></p>
+      <button id="nextPlayer">Weitergeben</button>
+    </div>
+
+    <div id="gameArea" class="hidden">
+      <h2>Diskussion läuft!</h2>
+      <p>Zeit: <span id="timer">03:00</span></p>
+      <button id="pauseBtn">⏸️ Pause</button>
+      <button id="revealImposters">🤫 Imposter aufdecken</button>
+      <button id="restartBtn">🔁 Neustarten</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
