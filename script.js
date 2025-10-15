@@ -1,11 +1,32 @@
-let numPlayers, numImposters, players = [], imposters = [], commonWord = "Apfel", current = 0;
+// --- Wortliste ---
+const words = [
+  "Abenteuer","Blätterwald","Fahrradkette","Gewitter","Zaunpfahl","Laterne","Taschenlampe","Regenbogen",
+  "Schneeflocke","Honigglas","Rucksack","Bibliothek","Zirkuszelt","Kartoffelsalat","Wasserhahn","Spielplatz",
+  "Rakete","Zeitung","Schlüsselbund","Briefkasten","Feuerzeug","Zahnarzt","Glühbirne","Parkbank","Kirchturm",
+  "Gartenschlauch","Computermaus","Goldfisch","Zahnpasta","Schneemann","Teetasse","Bleistift","Einkaufskorb",
+  "Bilderrahmen","Taschenmesser","Luftballon","Blumentopf","Schneeschaufel","Fernglas","Windmühle","Kochtopf",
+  "Schulranzen","Eimer","Regenschirm","Heißluftballon","Reisekoffer","Malkasten","Schmetterling","Kerzenhalter",
+  "Sandburg","Vogelhaus","Magnet","Gießkanne","Fernbedienung","Stirnlampe","Schlafsack","Kompass","Angelrute",
+  "Taschenrechner","Uhrzeiger","Blasinstrument","Zahnbürste","Kleiderschrank","Stuhlbein","Wasserflasche",
+  "Kühlschrank","Bettdecke","Seifenblase","Notizbuch","Spiegelbild","Fensterbrett","Schaufelrad","Eislöffel",
+  "Gartenstuhl","Schneeglöckchen","Schraubenzieher","Vogelfutter","Regenschauer","Schreibtisch","Klebeband",
+  "Wanduhr","Glastür","Straßenlampe","Mikroskop","Kopfhörer","Pullover","Kaminfeuer","Regenjacke","Bonbonglas",
+  "Wasserwaage","Stromkabel","Fahrradhelm","Waschmaschine","Bäckerei","Baustelle","Tierarzt","Mülltonne","Wecker",
+  "Strohhalm","Wolkenkratzer"
+];
+
+let numPlayers, numImposters, players = [], imposters = [], commonWord = "", lastWord = "";
+let current = 0;
 let timerInterval, timeLeft = 180, paused = false;
 
 const setupDiv = document.getElementById("setup");
 const nameSetupDiv = document.getElementById("nameSetup");
 const revealDiv = document.getElementById("reveal");
 const gameArea = document.getElementById("gameArea");
+const wordDisplay = document.getElementById("wordDisplay");
+const nextBtn = document.getElementById("nextPlayer");
 
+// --- Funktionen ---
 document.getElementById("nextSetup").addEventListener("click", () => {
   numPlayers = parseInt(document.getElementById("numPlayers").value);
   numImposters = parseInt(document.getElementById("numImposters").value);
@@ -30,6 +51,14 @@ document.getElementById("startGame").addEventListener("click", () => {
     if (!imposters.includes(rand)) imposters.push(rand);
   }
 
+  // Neues zufälliges Wort auswählen (nicht dasselbe wie beim letzten Mal)
+  let newWord;
+  do {
+    newWord = words[Math.floor(Math.random() * words.length)];
+  } while (newWord === lastWord);
+  commonWord = newWord;
+  lastWord = newWord;
+
   nameSetupDiv.classList.add("hidden");
   revealDiv.classList.remove("hidden");
   showNextPlayer();
@@ -43,15 +72,28 @@ function showNextPlayer() {
   }
 
   document.getElementById("currentPlayer").innerText = `${players[current]} ist dran`;
-  document.getElementById("wordDisplay").innerText = imposters.includes(current)
-    ? "Du bist der IMPOSTER 🕵️‍♂️"
-    : `Dein Wort ist: ${commonWord}`;
+  wordDisplay.innerText = "⬇️ Drücke 'Wort anzeigen' um dein Wort zu sehen";
+  wordDisplay.style.fontWeight = "normal";
 
-  document.getElementById("nextPlayer").innerText =
-    current === numPlayers - 1 ? "Spiel starten" : "Weitergeben";
+  // Buttons vorbereiten
+  nextBtn.classList.add("hidden");
+  let showBtn = document.createElement("button");
+  showBtn.id = "showWord";
+  showBtn.innerText = "Wort anzeigen";
+  revealDiv.appendChild(showBtn);
+
+  showBtn.addEventListener("click", () => {
+    wordDisplay.innerText = imposters.includes(current)
+      ? "Du bist der IMPOSTER 🕵️‍♂️"
+      : `Dein Wort ist: ${commonWord}`;
+    wordDisplay.style.fontWeight = "bold";
+    showBtn.remove();
+    nextBtn.classList.remove("hidden");
+    nextBtn.innerText = current === numPlayers - 1 ? "Spiel starten" : "Weitergeben";
+  });
 }
 
-document.getElementById("nextPlayer").addEventListener("click", () => {
+nextBtn.addEventListener("click", () => {
   current++;
   showNextPlayer();
 });
@@ -60,6 +102,8 @@ function startCountdown() {
   gameArea.classList.remove("hidden");
   const timer = document.getElementById("timer");
   timeLeft = 180;
+  paused = false;
+  clearInterval(timerInterval);
 
   timerInterval = setInterval(() => {
     if (!paused) {
